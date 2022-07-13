@@ -3,12 +3,12 @@ import { all, fork } from 'redux-saga/effects'
 
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 
-import { watchUserSaga } from './sagas';
+import { watchUserSaga, watchAlbumSaga, watchPhotoSaga } from './sagas';
 
 import RootReducer from './slices';
 
 function* RootSaga() {
-    yield all([fork(watchUserSaga)]);
+    yield all([fork(watchUserSaga), fork(watchAlbumSaga), fork(watchPhotoSaga)]);
 } 
 
 const sagaMiddleware = saga();

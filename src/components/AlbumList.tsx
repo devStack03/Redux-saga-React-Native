@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ActivityIndicator, FlatList, TouchableOpacity } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-
-// helper
-import { getDataFromGivenUrl } from '../util/API';
+// newly added for redux
+import useActions from '../hooks/useActions';
+import useTypedSelector from '../hooks/useTypedSelector';
 
 type Props = {
     navigation: any;
@@ -15,34 +15,22 @@ type Props = {
 export default function AlbumList(props: Props) {
 
     //state and veriable
-    let userId = props.route?.params?.user?.id
+    let userId = props.route?.params?.user?.id;
     let userName = props.route?.params?.user?.name
-    const [loading, setLoading] = useState(false);
-    const [albums, setAlbums] = useState([]);
+    // newly added 
+    const actions = useActions();
+    const state = useTypedSelector(state => state);
     const [error, setError] = useState('');
-
     // life cycle
     useEffect(() => {
-
-        setLoading(true)
-
-        let dataObj: any = {
-            url: `http://jsonplaceholder.typicode.com/albums?userId=${userId}`,
-            callBack: getDataSuccess
-        }
-        getDataFromGivenUrl(dataObj)
-
+        const abortController = new AbortController()
+        actions.getAlbumListApi({ id: userId });
+        
+        return () => {
+            abortController.abort()
+            // stop the query by aborting on the AbortController on unmount
+          }
     }, []);
-
-    // helper functions
-
-    // call back when get data or error
-    const getDataSuccess = (data: { payload: React.SetStateAction<never[]>; }) => {
-
-        setAlbums(data.payload)
-        setLoading(false)
-    }
-
     // on user click action
     const handleClick = (album: any) => {
 
@@ -69,7 +57,7 @@ export default function AlbumList(props: Props) {
     // render view
 
     // loading
-    if (loading) {
+    if (state.isLoading) {
 
         return (
             <View
@@ -91,7 +79,7 @@ export default function AlbumList(props: Props) {
     return (
         <View style={styles.container}>
             <Text style={styles.header}>{userName}'s Albums</Text>
-            <FlatList data={albums}
+            <FlatList data={state.albums}
                 renderItem={renderUser}
                 keyExtractor={item => item.id.toString()} />
 

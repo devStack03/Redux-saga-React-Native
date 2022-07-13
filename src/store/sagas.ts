@@ -23,11 +23,13 @@ function* getUserListApi() {
 
 }
 
-function* getAlbumListApi(userId: number) {
+function* getAlbumListApi(action: ReturnType<typeof actions.getAlbumListApi>) {
     yield put(sliceActions.setIsLoading(true));
 
+    const { payload: { id }} = action;
+
     try {
-        const { data }: AxiosResponse<Array<Album>> = yield axios.get(`${API_HOST}/albums?userId=${userId}`);
+        const { data }: AxiosResponse<Array<Album>> = yield axios.get(`${API_HOST}/albums?userId=${id}`);
 
         yield put(sliceActions.setAlbums(data));
     } catch (error) {
@@ -38,11 +40,13 @@ function* getAlbumListApi(userId: number) {
 
 }
 
-function* getPhotoListApi(albumId: number) {
+function* getPhotoListApi(action: ReturnType<typeof actions.getPhotoListApi>) {
     yield put(sliceActions.setIsLoading(true));
+    
+    const { payload: { id }} = action;
 
     try {
-        const { data }: AxiosResponse<Array<Photo>> = yield axios.get(`${API_HOST}/photos?albumId=${albumId}`);
+        const { data }: AxiosResponse<Array<Photo>> = yield axios.get(`${API_HOST}/photos?albumId=${id}`);
 
         yield put(sliceActions.setPhotos(data));
     } catch (error) {
@@ -55,4 +59,12 @@ function* getPhotoListApi(albumId: number) {
 
 export function* watchUserSaga() {
     yield takeLatest(actions.getUserListApi.type, getUserListApi);
+}
+
+export function* watchAlbumSaga() {
+    yield takeLatest(actions.getAlbumListApi.type, getAlbumListApi);
+}
+
+export function* watchPhotoSaga() {
+    yield takeLatest(actions.getPhotoListApi.type, getPhotoListApi);
 }

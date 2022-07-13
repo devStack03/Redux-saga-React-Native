@@ -4,8 +4,6 @@ import { StyleSheet, Text, View, ActivityIndicator, FlatList, TouchableOpacity }
 // newly added for redux
 import useActions from '../hooks/useActions';
 import useTypedSelector from '../hooks/useTypedSelector';
-// helper
-import { getDataFromGivenUrl } from '../util/API';
 
 type Props = {
     navigation: any;
@@ -16,37 +14,21 @@ type Props = {
 export default function Home(props: Props) {
 
     // states & variables
-    const [loading, setLoading] = useState(false);
-    const [userList, setUserList] = useState([]);
-    const [error, setError] = useState('');
-
     // newly added 
-
     const actions = useActions();
     const state = useTypedSelector(state => state);
+    const [error, setError] = useState('');
+
     // life cycle
     useEffect(() => {
-        /* commented because of using redux-saga
-        setLoading(true)
-
-        let dataObj: any = {
-            url: 'http://jsonplaceholder.typicode.com/users',
-            callBack: getDataSuccess
-        }
-
-        getDataFromGivenUrl(dataObj)
-        */
-
-        actions.getUserListApi()
-
+        const abortController = new AbortController()
+        actions.getUserListApi();
+        
+        return () => {
+            abortController.abort()
+            // stop the query by aborting on the AbortController on unmount
+          }
     }, []);
-
-    // call back when get data or get error
-    const getDataSuccess = (data: { payload: React.SetStateAction<never[]>; }) => {
-
-        setUserList(data.payload)
-        setLoading(false)
-    }
 
     // on user click action
     const handleClick = (user: any) => {
@@ -72,8 +54,6 @@ export default function Home(props: Props) {
         )
     }
 
-    // render view
-
     // loading
     if (state.isLoading) {
 
@@ -98,8 +78,8 @@ export default function Home(props: Props) {
         <View style={styles.container}>
             <FlatList data={state.users}
                 renderItem={renderUser}
-                keyExtractor={item => item.id.toString()} />
-
+                keyExtractor={item => item.id.toString()} 
+            />
         </View>
     );
 }
