@@ -1,7 +1,9 @@
 // react
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ActivityIndicator, FlatList, TouchableOpacity } from 'react-native';
-
+// newly added for redux
+import useActions from '../hooks/useActions';
+import useTypedSelector from '../hooks/useTypedSelector';
 // helper
 import { getDataFromGivenUrl } from '../util/API';
 
@@ -18,9 +20,13 @@ export default function Home(props: Props) {
     const [userList, setUserList] = useState([]);
     const [error, setError] = useState('');
 
+    // newly added 
+
+    const actions = useActions();
+    const state = useTypedSelector(state => state);
     // life cycle
     useEffect(() => {
-
+        /* commented because of using redux-saga
         setLoading(true)
 
         let dataObj: any = {
@@ -29,6 +35,9 @@ export default function Home(props: Props) {
         }
 
         getDataFromGivenUrl(dataObj)
+        */
+
+        actions.getUserListApi()
 
     }, []);
 
@@ -66,7 +75,7 @@ export default function Home(props: Props) {
     // render view
 
     // loading
-    if (loading) {
+    if (state.isLoading) {
 
         return (
             <View
@@ -87,7 +96,7 @@ export default function Home(props: Props) {
     // render
     return (
         <View style={styles.container}>
-            <FlatList data={userList}
+            <FlatList data={state.users}
                 renderItem={renderUser}
                 keyExtractor={item => item.id.toString()} />
 
