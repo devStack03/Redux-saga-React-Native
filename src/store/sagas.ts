@@ -8,6 +8,7 @@ import Album  from '../model/Album';
 import Photo  from '../model/Photo';
 import User  from '../model/User';
 import { API_HOST } from '../util/util';
+
 function* getUserListApi() {
     yield put(sliceActions.setIsLoading(true));
 
@@ -41,6 +42,7 @@ function* getAlbumListApi(action: ReturnType<typeof actions.getAlbumListApi>) {
 }
 
 function* getPhotoListApi(action: ReturnType<typeof actions.getPhotoListApi>) {
+
     yield put(sliceActions.setIsLoading(true));
     
     const { payload: { id }} = action;

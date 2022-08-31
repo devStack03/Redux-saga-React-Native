@@ -8,17 +8,20 @@ import { watchUserSaga, watchAlbumSaga, watchPhotoSaga } from './sagas';
 import RootReducer from './slices';
 
 function* RootSaga() {
+
     yield all([fork(watchUserSaga), fork(watchAlbumSaga), fork(watchPhotoSaga)]);
-} 
+
+}
 
 const sagaMiddleware = saga();
 
 const store = configureStore({
     reducer: RootReducer,
-    middleware: [
-        ...getDefaultMiddleware({ thunk: false, serializableCheck: false}),
-        sagaMiddleware,
-    ],
+    middleware: getDefaultMiddleware =>
+        getDefaultMiddleware({
+            serializableCheck: false,
+            thunk: false
+        }).concat(sagaMiddleware),
     devTools: process.env.NODE_ENV !== 'production',
 });
 

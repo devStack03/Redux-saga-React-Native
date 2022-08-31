@@ -28,11 +28,11 @@ export default function UserAlbums(props: Props) {
     useEffect(() => {
         const abortController = new AbortController()
         actions.getPhotoListApi({ id: albumId });
-        
+
         return () => {
             abortController.abort()
             // stop the query by aborting on the AbortController on unmount
-          }
+        }
     }, []);
 
     // on user click action
